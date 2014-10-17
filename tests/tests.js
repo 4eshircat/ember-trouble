@@ -30,8 +30,8 @@ test("index page has a title and a list of questions", function() {
 
     equal(
       find("ul:not(.nav) > li").length,
-      2,
-      "There are two questions in the list"
+      0,
+      "There are no questions in the list"
     );
   });
 });
@@ -53,4 +53,46 @@ test("quesion links on index page lead to questions", function() {
       "Question and author are rendered"
     );
   });
+});
+
+test("user will be able to login",function(){
+    delete localStorage['currentUser'];
+    App.set('currentUser', undefined);
+
+    visit("/sign-in");
+    fillIn(".form-control", "tomster@hamster.com");
+
+    click("button");
+
+    andThen(function() {
+        equal(
+            find("p").text(),
+            "You are already signed-in!",
+            "Signed-in message rendered"
+        );
+    });
+});
+
+test("signed-inusercanasknewquestion",function(){
+    localStorage['currentUser'] = 201;
+    App.set('currentUser', 201);
+
+    visit("/ask-question");
+    fillIn("#title", "Question title");
+    fillIn("#question", "Question");
+    click("button");
+
+    andThen(function(){
+        equal(
+            find("h2").text(),
+            "Question title",
+            "Question title is rendered"
+        );
+
+        equal(
+            find("p:first").text().replace(/\s+/g, ''),
+            "Question",
+            "Question is rendered"
+        );
+    });
 });
